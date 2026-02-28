@@ -1,0 +1,14 @@
+name: Test Action
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          policy: .rampart/policies/standard.yaml
+          min-coverage: 0

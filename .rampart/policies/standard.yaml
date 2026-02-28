@@ -1,0 +1,8 @@
+version: "1"
+default_action: allow
+policies:
+  - name: test-policy
+    rules:
+      - action: deny
+        when:
+          command_matches: "rm -rf /"
