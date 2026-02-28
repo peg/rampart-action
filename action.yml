@@ -64,7 +64,7 @@ runs:
         New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
         Copy-Item "$env:TEMP\rampart\rampart.exe" "$InstallDir\rampart.exe"
         echo "$InstallDir" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        rampart version
+        & "$InstallDir\rampart.exe" version
 
     - name: Lint policy
       shell: bash
@@ -78,15 +78,16 @@ runs:
     - name: Benchmark coverage
       shell: bash
       run: |
-        ARGS="--policy ${{ inputs.policy }} --severity ${{ inputs.severity }}"
-        if [ "${{ inputs.min-coverage }}" != "0" ]; then
-          ARGS="$ARGS --min-coverage ${{ inputs.min-coverage }}"
-        fi
+        STRICT_FLAG=""
         if [ "${{ inputs.strict }}" = "true" ]; then
-          ARGS="$ARGS --strict"
+          STRICT_FLAG="--strict"
+        fi
+        MIN_COV_FLAG=""
+        if [ "${{ inputs.min-coverage }}" != "0" ]; then
+          MIN_COV_FLAG="--min-coverage ${{ inputs.min-coverage }}"
         fi
         echo "::group::Rampart Bench"
-        rampart bench $ARGS
+        rampart bench --policy "${{ inputs.policy }}" --severity "${{ inputs.severity }}" $STRICT_FLAG $MIN_COV_FLAG
         EXIT=$?
         echo "::endgroup::"
         exit $EXIT
